@@ -40,89 +40,100 @@ include('header.php');
                 </div>
               </div>
               <?php
-                // if (!empty($_GET['pageno'])) {
-                //   $pageno = $_GET['pageno'];
-                // }else {
-                //   $pageno = 1;
-                // }
-                // $numOfrecs = 4;
-                // $offset = ($pageno - 1) * $numOfrecs;
+                if (!empty($_GET['pageno'])) {
+                  $pageno = $_GET['pageno'];
+                }else {
+                  $pageno = 1;
+                }
+                $numOfrecs = 4;
+                $offset = ($pageno - 1) * $numOfrecs;
 
-                // if (empty($_POST['search']) && empty($_COOKIE['search'])) {
+                if (empty($_POST['search']) && empty($_COOKIE['search'])) {
 
 
-                //   $pdostmt = $pdo -> prepare("SELECT * FROM posts ORDER BY id DESC");
-                //   $pdostmt-> execute();
-                //   $rawResult = $pdostmt->fetchAll();
+                  $pdostmt = $pdo -> prepare("SELECT * FROM products ORDER BY id DESC");
+                  $pdostmt-> execute();
+                  $rawResult = $pdostmt->fetchAll();
 
-                //   $total_pages = ceil(count($rawResult)/$numOfrecs);
+                  $total_pages = ceil(count($rawResult)/$numOfrecs);
 
-                //   $pdostmt = $pdo -> prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                //   $pdostmt-> execute();
-                //   $result = $pdostmt->fetchAll();
-                // }else {
-                //   $searchKey = !empty($_POST['search']) ? $_POST['search'] : $_COOKIE['search'];
+                  $pdostmt = $pdo -> prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                  $pdostmt-> execute();
+                  $result = $pdostmt->fetchAll();
+                }else {
+                  $searchKey = !empty($_POST['search']) ? $_POST['search'] : $_COOKIE['search'];
 
-                //   $pdostmt = $pdo -> prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
-                //   // print_r($pdostmt);exit();
-                //   $pdostmt-> execute();
-                //   $rawResult = $pdostmt->fetchAll();
-                //   $total_pages = ceil(count($rawResult)/$numOfrecs);
+                  $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
+                  // print_r($pdostmt);exit();
+                  $pdostmt-> execute();
+                  $rawResult = $pdostmt->fetchAll();
+                  $total_pages = ceil(count($rawResult)/$numOfrecs);
 
-                //   $pdostmt = $pdo -> prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                //   $pdostmt-> execute();
-                //   $result = $pdostmt->fetchAll();
-                // }
+                  $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                  $pdostmt-> execute();
+                  $result = $pdostmt->fetchAll();
+                }
 
               ?>
 
               <!-- /.card-header -->
-              <!-- <div class="card-body">
+              <div class="card-body">
                 <div>
-                  <a href="add.php" type="button" class="btn btn-outline-success">Create New Blog</a>
+                  <a href="product_add.php" type="button" class="btn btn-outline-success">Create New Product</a>
                 </div>
                 <br>
                 <table class="table table-bordered">
                   <thead>
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Title</th>
-                      <th>Content</th>
+                      <th>Name</th>
+                      <th>Description</th>
+                      <th>Category</th>
+                      <th>In Stock</th>
+                      <th>Price</th>
                       <th style="width: 40px">Actions</th>
                     </tr>
                   </thead>
-                  <tbody> -->
+                  <tbody>
                     <?php
-                    //   $i = 1;
-                    //   if ($result) {
-                    //     foreach ($result as $value) {
-                     ?>
-                     <!-- <tr>
-                       <td><?php //echo $i; ?></td>
-                       <td><?php // echo escape($value['title']) ?></td>
-                       <td><?php // echo escape(substr($value['content'],0,50)) ?></td>
+                      $i = 1;
+                      if ($result) {
+                        foreach ($result as $value) { ?>
+                    <?php 
+                      $catStmt = $pdo -> prepare("SELECT * FROM categories WHERE id=".$value['category_id']);
+                      $catStmt-> execute();
+                      $catResult = $catStmt->fetchAll(); 
+                    ?>
+                     
+                     <tr>
+                       <td><?php  echo $i; ?></td>
+                       <td><?php  echo escape($value['name']) ?></td>
+                       <td><?php  echo escape(substr($value['description'],0,20)) ?></td>
+                       <td><?php  echo escape($catResult[0]['name']) ?></td>
+                       <td><?php  echo escape($value['quantity']) ?></td>
+                       <td><?php  echo escape($value['price']) ?></td>
                        <td>
                          <div class="btn-group">
                            <div class="container">
-                             <a href="edit.php?id=<?php //echo $value['id'] ?>" type="button" class="btn btn-outline-warning">Edit</a>
+                             <a href="product_edit.php?id=<?php echo $value['id'] ?>" type="button" class="btn btn-outline-warning">Edit</a>
                            </div>
                            <div class="container">
-                             <a href="delete.php?id=<?php //echo $value['id'] ?>"
+                             <a href="product_delete.php?id=<?php echo $value['id'] ?>"
                                onclick="return confirm('Are you sure want to delete this item')"
                                type="button" class="btn btn-outline-danger">Delete</a>
                            </div>
                          </div>
                        </td>
-                     </tr> -->
+                     </tr>
                     <?php
-                    //   $i++;
-                    //     }
+                      $i++;
+                        }
 
-                    //   }
+                      }
 
                     ?>
-                  <!-- </tbody>
-                </table><br> -->
+                  </tbody>
+                </table><br>
                 
                 
               </div>
