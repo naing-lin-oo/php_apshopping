@@ -116,7 +116,7 @@ if ($_POST) {
 
                 <div class="form-group">
                   <input type="submit" class="btn btn-outline-success" name="" value="Create">
-                  <a type="button" class="btn btn-outline-warning" href="category.php">Back</a>
+                  <a type="button" class="btn btn-outline-warning" href="index.php">Back</a>
                 </div>
 
               </form>
