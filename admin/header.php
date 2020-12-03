@@ -38,8 +38,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
       $link_array=explode('/',$link);
       $page = end($link_array);
     ?>
-  
-    <?php if($page != 'order_list.php' & $page != 'order_detail.php') { ?>
+    <!-- Search Field Hiding Code -->
+    <?php if($page == 'user_list.php' || $page == 'category.php' || $page == 'index.php') { ?> 
+      
       <form class="form-inline ml-3" method="post" 
       <?php if($page == 'index.php'): ?>
       action="index.php"

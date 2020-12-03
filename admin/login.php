@@ -1,37 +1,38 @@
 <?php
-
 session_start();
 require '../config/config.php';
 require '../config/common.php';
 
 if ($_POST) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $pdostmt = $pdo -> prepare("SELECT * FROM users WHERE email = :email");
-    $pdostmt -> bindValue(':email',$email);
-    $pdostmt -> execute();
-    $user = $pdostmt -> fetch(PDO::FETCH_ASSOC);
-    if ($user) {
-      if (password_verify($password, $user['password'])) {
-        $_SESSION['user_id']=$user['id'];
-        $_SESSION['username']=$user['name'];
-        $_SESSION['role']=1;
-        $_SESSION['logged_in']=time();
+  $email = $_POST['email'];
+  $password = $_POST['password'];
 
-        header('Location: index.php');
-      }
+  $stmt = $pdo->prepare("SELECT * FROM users WHERE email=:email");
+
+  $stmt->bindValue(':email',$email);
+  $stmt->execute();
+  $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+  if ($user) {
+    if (password_verify($password,$user['password'])) {
+      $_SESSION['user_id'] = $user['id'];
+      $_SESSION['username'] = $user['name'];
+      $_SESSION['logged_in'] = time();
+      $_SESSION['role'] = 1;
+        
+      header('Location: index.php');
     }
-      echo "<script>alert('Incorrect email or password')</script>";
+  }
+  echo "<script>alert('Incorrect credentials')</script>";
 }
 
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Shopping App | Log in</title>
+  <title>AP Shopping | Log in</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -49,7 +50,7 @@ if ($_POST) {
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="#"><b>NLO Shopping </b>Admin Panel </a>
+    <a href="index2.html"><b>AP Shopping </b>Admin Panel</a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
@@ -57,7 +58,8 @@ if ($_POST) {
       <p class="login-box-msg">Sign in to start your session</p>
 
       <form action="login.php" method="post">
-      <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
+        <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
+
         <div class="input-group mb-3">
           <input type="email" name="email" class="form-control" placeholder="Email">
           <div class="input-group-append">
@@ -82,8 +84,6 @@ if ($_POST) {
           <!-- /.col -->
         </div>
       </form>
-
-      <!-- /.social-auth-links -->
 
       <!-- <p class="mb-0">
         <a href="register.html" class="text-center">Register a new membership</a>
