@@ -7,6 +7,10 @@ if(session_status() == PHP_SESSION_NONE) { // Testing session_start() is already
 require('config/config.php');
 require('config/common.php');
 
+if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
+    header('Location: login.php');
+  }
+
 if(!empty($_POST['search'])) {
     setcookie('search', $_POST['search'], time() + (86400 * 30), "/");
   } else {
@@ -33,30 +37,30 @@ if(!empty($_POST['search'])) {
     
         $total_pages = ceil(count($rawResult)/$numOfrecs);
     
-        $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE category_id=$categoryId ORDER BY id DESC LIMIT $offset,$numOfrecs");
+        $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE category_id=$categoryId AND quantity > 0 ORDER BY id DESC LIMIT $offset,$numOfrecs");
         $pdostmt-> execute();
         $result = $pdostmt->fetchAll();
     } else {
-    $pdostmt = $pdo -> prepare("SELECT * FROM products ORDER BY id DESC");
+    $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE quantity > 0 ORDER BY id DESC");
     $pdostmt-> execute();
     $rawResult = $pdostmt->fetchAll();
 
     $total_pages = ceil(count($rawResult)/$numOfrecs);
 
-    $pdostmt = $pdo -> prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$numOfrecs");
+    $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE quantity > 0 ORDER BY id DESC LIMIT $offset,$numOfrecs");
     $pdostmt-> execute();
     $result = $pdostmt->fetchAll();
   }
 }else {
     $searchKey = !empty($_POST['search']) ? $_POST['search'] : $_COOKIE['search'];
 
-    $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
+    $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' AND quantity > 0 ORDER BY id DESC");
     // print_r($pdostmt);exit();
     $pdostmt-> execute();
     $rawResult = $pdostmt->fetchAll();
     $total_pages = ceil(count($rawResult)/$numOfrecs);
 
-    $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
+    $pdostmt = $pdo -> prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' AND quantity > 0 ORDER BY id DESC LIMIT $offset,$numOfrecs");
     $pdostmt-> execute();
     $result = $pdostmt->fetchAll();
   }
@@ -127,15 +131,20 @@ if(!empty($_POST['search'])) {
                         <h6><?php echo $value['price']; ?></h6>
                     </div>
                     <div class="prd-bottom">
-
-                        <a href="" class="social-info">
-                            <span class="ti-bag"></span>
-                            <p class="hover-text">add to bag</p>
-                        </a>
+                    <form action="addtocart.php" method="post" class="">
+                    <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
+                    <input type="hidden" name="id" value="<?php echo escape($value['id'])?>">
+                    <input type="hidden" name="qty" value="1">
+                        <div class="social-info">
+                            <button style="display: contents" class="social-info" type="submit">
+                                <span class="ti-bag"></span><p style="left: 20px;" class="hover-text">add to bag</p>
+                            </button>
+                        </div>
                         <a href="product_detail.php?id=<?php echo $value['id']; ?>" class="social-info">
                             <span class="lnr lnr-move"></span>
                             <p class="hover-text">view more</p>
                         </a>
+                    </form>                        
                     </div>
                 </div>
             </div>

@@ -1,3 +1,61 @@
+<?php
+	session_start();
+	require 'config/config.php';
+	require 'config/common.php';
+
+	if(!empty($_SESSION['cart'])) {
+		
+	$userId = $_SESSION['user_id'];
+	$total = 0;
+	$subtotal = 0;
+	foreach($_SESSION['cart'] as $key => $qty) {
+		$id = str_replace('id','',$key);
+        $stmt = $pdo->prepare("SELECT * FROM products WHERE id=".$id);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $total = $result['price'] * $qty;
+        $subtotal += $total;
+	}
+	
+	// Inserting Sale order table
+	// $stmt = $pdo->prepare("INSERT INTO sale_orders(user_id, total_price, order_date) VALUES (':user_id, :total, :odate')");
+	// $result = $stmt->execute(
+	// 	array(':user_id'=>$userId, ':total'=>$subtotal, ':odate'=>date('Y-m-d H:i:s'))
+	// );
+	$stmt = $pdo->prepare("INSERT INTO sale_orders(user_id,total_price,order_date) VALUES (:user_id,:total,:odate)");
+	$result = $stmt->execute(
+			array(':user_id'=>$userId,':total'=>$total,':odate'=>date('Y-m-d H:i:s'))
+	);
+
+	if($result) {
+		$saleOrderId = $pdo->lastInsertId();
+		foreach($_SESSION['cart'] as $key => $qty) {
+			$id = str_replace('id','',$key);
+			// $stmt = $pdo->prepare("INSERT INTO sale_order_detail(sale_order_id, product_id, quantity, order_date) VALUES (':sale_order_id, :product_id, :quantity, :odate')");
+			// $result = $stmt->execute(
+			// 	array(':sale_order_id'=>$saleOrderId, ':product_id'=>$id, ':quantity'=>$qty, ':odate'=>date('Y-m-d H:i:s'))
+			// );
+			$stmt = $pdo->prepare("INSERT INTO sale_order_detail(sale_order_id,product_id,quantity) VALUES (:sid,:pid,:qty)");
+			$result = $stmt->execute(
+					array(':sid'=>$saleOrderId,':pid'=>$id,':qty'=>$qty)
+			);
+
+			$qtyStmt = $pdo->prepare("SELECT quantity FROM products WHERE id =".$id);
+			$qtyStmt -> execute();
+			$qtyResult = $qtyStmt -> fetch(PDO::FETCH_ASSOC);
+
+			$updateQty = $qtyResult['quantity'] - $qty;
+
+			$updateQtyStmt = $pdo->prepare("UPDATE products SET quantity=:qty WHERE id=:pid");
+			$resultupdateQty = $updateQtyStmt -> execute(
+				array(':qty'=>$updateQty, ':pid'=>$id)
+			);
+		}
+		unset($_SESSION['cart']);
+		}		
+	}
+
+?>
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 
@@ -15,7 +73,7 @@
 	<!-- meta character set -->
 	<meta charset="UTF-8">
 	<!-- Site Title -->
-	<title>Karma Shop</title>
+	<title>NLO Shop</title>
 
 	<!--
 		CSS
@@ -38,7 +96,7 @@
 			<nav class="navbar navbar-expand-lg navbar-light main_box">
 			<div class="container">
                     <!-- Brand and toggle get grouped for better mobile display -->
-                    <a class="navbar-brand logo_h" href="index.html">
+                    <a class="navbar-brand logo_h" href="index.php">
                         <h4>NLO Shopping</h4>
                     </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,29 +150,7 @@
 	<section class="order_details section_gap">
 		<div class="container">
 			<h3 class="title_confirmation">Thank you. Your order has been received.</h3>
-			<div class="row order_d_inner">
-				<div class="col-lg-6">
-					<div class="details_item">
-						<h4>Order Info</h4>
-						<ul class="list">
-							<li><a href="#"><span>Order number</span> : 60235</a></li>
-							<li><a href="#"><span>Date</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Total</span> : USD 2210</a></li>
-							<li><a href="#"><span>Payment method</span> : Check payments</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<div class="details_item">
-						<h4>Shipping Address</h4>
-						<ul class="list">
-							<li><a href="#"><span>Street</span> : 56/8</a></li>
-							<li><a href="#"><span>City</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Country</span> : United States</a></li>
-							<li><a href="#"><span>Postcode </span> : 36952</a></li>
-						</ul>
-					</div>
-				</div>
+			
 			</div>
 		</div>
 	</section>

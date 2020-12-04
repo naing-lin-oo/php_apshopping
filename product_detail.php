@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require 'config/config.php';
 require 'config/common.php';
 
@@ -7,6 +7,7 @@ $stmt = $pdo->prepare("SELECT * FROM products WHERE id=".$_GET['id']);
 $stmt->execute();
 $result = $stmt->fetch(PDO::FETCH_ASSOC); // No need to place [0]
 
+//print_r($_SESSION['cart']);
 ?>
 <!--================Single Product Area =================-->
 
