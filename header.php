@@ -15,7 +15,7 @@
     <!-- meta character set -->
     <meta charset="UTF-8">
     <!-- Site Title -->
-    <title>Karma Shop</title>
+    <title>NLO Shop</title>
 
     <!--
             CSS
@@ -86,32 +86,13 @@
     <!-- Start Banner Area -->
     <section class="banner-area organic-breadcrumb">
         <div class="container">
-        <a href="logout.php" type="button">Logout</a>
             <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                 <div class="col-first">
-                    <h1>Welcome From NLO Shopping</h1>
+                    <!-- <h1>Welcome <?php //echo escape($_SESSION['username']) ?></h1><br>
+                    <a href="logout.php" class="btn btn-warning">Logout</a> -->
                 </div>
             </div>
         </div>
     </section>
     <!-- End Banner Area -->
     
-    
-    
-                    <!-- <div class="sorting mr-auto">
-                        <select>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-						</select>
-                    </div>
-                    <div class="pagination">
-                        <a href="#" class="prev-arrow"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
-                        <a href="#" class="active">1</a>
-                        <a href="#">2</a>
-                        <a href="#">3</a>
-                        <a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
-                        <a href="#">6</a>
-                        <a href="#" class="next-arrow"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
-                    </div>
-                </div> -->

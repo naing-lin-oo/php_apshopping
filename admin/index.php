@@ -24,7 +24,6 @@ if (!empty($_POST['search'])) {
 
 
 <?php include('header.php'); ?>
-<?php echo $_SESSION['role']; ?>
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
