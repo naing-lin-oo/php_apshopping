@@ -25,7 +25,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
               </div>
               <?php
                 $currentDate = date("Y-m-d");
-                $stmt = $pdo->prepare("SELECT * FROM sale_order_detail GROUP BY product_id HAVING SUM(quantity) > 5 ORDER BY id DESC");
+                $stmt = $pdo->prepare("SELECT SUM(quantity) as qsum,product_id FROM sale_order_detail GROUP BY product_id");
                 $stmt->execute();
                 $result = $stmt->fetchAll();
                 //echo "SUM(quantity)";exit;
@@ -37,15 +37,15 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                     <tr>
                       <th>#</th>
                       <th>Product</th>
-                      <th>Quantity</th>
+                      <th>Total Quantity</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php
                     if ($result) {
                       $i = 1;
-                      foreach ($result as $value) { ?>
-
+                      foreach ($result as $value) { 
+                        if($value['qsum'] > 5) {  ?>
                         <?php
                           $stmt = $pdo->prepare("SELECT * FROM products WHERE id=".$value['product_id']);
                           $stmt->execute();
@@ -54,10 +54,12 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                         <tr>
                           <td><?php echo $i;?></td>
                           <td><?php echo escape($result[0]['name'])?></td>
+                          <td><?php echo escape($value['qsum']) ?></td>
                         </tr>
                     <?php
                       $i++;
                       }
+                    }
                     }
                     ?>
                   </tbody>

@@ -40,7 +40,7 @@ if (!empty($_POST['search'])) {
                   $pageno = 1;
                 }
 
-                $numOfrecs = 1;
+                $numOfrecs = 4;
                 $offset = ($pageno - 1) * $numOfrecs;
 
                 if (empty($_POST['search']) && empty($_COOKIE['search'])) {

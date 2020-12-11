@@ -23,11 +23,12 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
               </div>
               <?php
                 $currentDate = date("Y-m-d");
-                $stmt = $pdo->prepare("SELECT * FROM sale_orders WHERE total_price>=400000 group by user_id ORDER BY id DESC");
+                $tpsubsum = 0;
+                //SELECT SUM(quantity) as qsum,product_id FROM sale_order_detail GROUP BY product_id
+                $stmt = $pdo->prepare("SELECT SUM(total_price) as tpsum,user_id FROM sale_orders GROUP BY user_id");
+                //$stmt = $pdo->prepare("SELECT SUM(total_price) as tpsubsum,user_id FROM sale_orders");
                 $stmt->execute();
-                $result = $stmt->fetchAll();
-
-                
+                $result = $stmt->fetchAll();               
               ?>
               <!-- /.card-header -->
               <div class="card-body">
@@ -37,7 +38,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                       <th style="width: 10px">#</th>
                       <th>UserID</th>
                       <th>Total Amount</th>
-                      <th>Order Date</th>
+                      <!-- <th>Order Date</th> -->
                     </tr>
                   </thead>
                   <tbody>
@@ -47,6 +48,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                       foreach ($result as $value) { ?>
 
                         <?php
+                            $tpsubsum += $value['tpsum'];
                             $userStmt = $pdo->prepare("SELECT * FROM users WHERE id=".$value['user_id']);
                             $userStmt->execute();
                             $userResult = $userStmt->fetchAll();
@@ -54,14 +56,18 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                         <tr>
                           <td><?php echo $i;?></td>
                           <td><?php echo escape($userResult[0]['name'])?></td>
-                          <td><?php echo escape($value['total_price'])?></td>
-                          <td><?php echo escape(date("Y-m-d",strtotime($value['order_date'])))?></td>
+                          <td><?php echo escape($value['tpsum'])?></td>
+                          <!-- <td><?php //echo escape(date("Y-m-d",strtotime($value['order_date'])))?></td> -->
                         </tr>
                     <?php
                       $i++;
                       }
                     }
                     ?>
+                    <tr>
+                      <td colspan="2" class="text-center bold"><b>Total Sold Amount</b></td>
+                      <td><?php echo escape($tpsubsum) ?></td>
+                    </tr>
                   </tbody>
                 </table><br>
 
